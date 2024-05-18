@@ -51,7 +51,7 @@ vec3 Shade(Material mtl, vec3 position, vec3 normal, vec3 view){
 			float cosfi = max(0.0,dot(normal, h));
 			if ((costheta > -1.0) ){
 				color += lights[i].intensity*(costheta*mtl.k_d);
-				if (cosfi > 0.0){
+				if (cosfi >= 0.0){
 					color += lights[i].intensity* mtl.k_s* (cosfi * pow(cosfi,mtl.n));
 				}
 			}
@@ -97,6 +97,7 @@ bool IntersectRay( inout HitInfo hit, Ray ray )
 				hit.t = t2;
 				replaced_t = true;
 			}
+			
 
 			if(replaced_t){
 				foundHit = true;
@@ -132,8 +133,8 @@ vec4 RayTracer( Ray ray )
 			// TO-DO: Initialize the reflection ray
 			
 			r.pos = hit.position + 1e-2 * hit.normal;
-			r.dir = 2.0*dot(view,hit.normal)*hit.normal - view;
-
+			r.dir = normalize(2.0*dot(view,hit.normal)*hit.normal - view);
+			
 
 			if ( IntersectRay( h, r ) ) {
 				// TO-DO: Hit found, so shade the hit point
@@ -142,7 +143,7 @@ vec4 RayTracer( Ray ray )
 			
 				hit = h;
 				clr += k_s * Shade(h.mtl, h.position, h.normal, view);
-				k_s *= hit.mtl.k_s;
+				k_s = hit.mtl.k_s;
 			} else {
 				// The refleciton ray did not intersect with anything,
 				// so we are using the environment color
