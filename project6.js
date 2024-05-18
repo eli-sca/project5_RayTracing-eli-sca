@@ -40,7 +40,7 @@ vec3 Shade(Material mtl, vec3 position, vec3 normal, vec3 view){
 	vec3 color = vec3(0,0,0);
 	for(int i = 0 ; i < NUM_LIGHTS ; i++){									
 		Ray shadowRay;
-		shadowRay.pos = position + 1e-2 * normal;
+		shadowRay.pos = position + 1.5*normal;
 		shadowRay.dir = normalize(lights[i].position - position);
 
 		HitInfo hit;
@@ -142,8 +142,10 @@ vec4 RayTracer( Ray ray )
 				view = -r.dir;
 			
 				hit = h;
-				clr += k_s * Shade(h.mtl, h.position, h.normal, view);
-				k_s = hit.mtl.k_s;
+				
+				clr = k_s * Shade(h.mtl, h.position, h.normal, view);
+				k_s *= hit.mtl.k_s;
+				
 			} else {
 				// The refleciton ray did not intersect with anything,
 				// so we are using the environment color
